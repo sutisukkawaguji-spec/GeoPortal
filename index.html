@@ -286,8 +286,8 @@
 </footer>
 
 <script>
-  // URL จากระบบหลังบ้าน Google Apps Script
-  const API_URL = 'https://script.google.com/macros/s/AKfycbuwrxyCsv9mIMPE_YorHs0JZNTE5GVA-6_lZaU-2AYlyMviZ4w-KwOjQwYKNXu58tq9/exec';
+  // URL จากระบบหลังบ้าน Google Apps Script (แก้ไข ID ให้ถูกต้อง)
+  const API_URL = 'https://script.google.com/macros/s/AKfycbwrlxyCsv9mIMPE_YorHs0JZNTE5GVA-6_lZaU-2AYlyMviZ4w-KwOjQwYKNXu58tq9/exec';
 
   function showPage(id) {
     document.querySelectorAll('.nav-links button').forEach(b => b.classList.remove('active'));
@@ -328,23 +328,26 @@
 
     setLoading(btnId, true);
     try {
-      // ใช้เทคนิคส่งแบบ text/plain เพื่อหลีกเลี่ยงปัญหา CORS Preflight ในเบราว์เซอร์
-      const response = await fetch(API_URL, { 
-        method: 'POST', 
-        body: JSON.stringify(payload),
-        headers: {
-          'Content-Type': 'text/plain;charset=utf-8'
-        }
+      // สร้าง Query String
+      const params = new URLSearchParams(payload);
+      const finalUrl = `${API_URL}?${params.toString()}`;
+
+      console.log("Calling API:", finalUrl);
+
+      const response = await fetch(finalUrl, { 
+        method: 'GET',
+        mode: 'cors',
+        cache: 'no-cache'
       });
       
       const res = await response.json();
       
-      let m = res.message;
-      if (res.expiry_date) m += "<br>หมดอายุ: " + res.expiry_date;
+      let m = res.message || "สำเร็จ";
+      if (res.expiry_date) m += "<br>วันหมดอายุ: " + res.expiry_date;
       showAlert(alertId, m, res.status === 'success' ? 'success' : 'error');
     } catch (e) {
       console.error("Fetch Error:", e);
-      showAlert(alertId, "การเชื่อมต่อขัดข้อง: " + e.message, "error");
+      showAlert(alertId, `<b>เชื่อมต่อไม่สำเร็จ:</b><br>1. ตรวจสอบว่าตั้งค่าสคริปต์เป็น 'Anyone' หรือยัง<br>2. ลองเปิดลิงก์ <a href="${API_URL}" target="_blank">นี้</a> ในแท็บใหม่ ถ้าขึ้น Error แสดงว่าสคริปต์ใช้ได้`, "error");
     }
     setLoading(btnId, false);
   }
