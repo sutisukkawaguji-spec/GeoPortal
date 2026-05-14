@@ -267,7 +267,7 @@
     </div>
 
     <!-- Status Section -->
-    <div style="text-align: center;">
+    <div style="text-align: center; margin-bottom: 50px;">
         <h3><i class="fas fa-search"></i> ตรวจสอบสถานะบัญชี</h3>
         <div class="form-section" style="margin-top: 20px;">
             <div class="form-group">
@@ -275,6 +275,23 @@
             </div>
             <button class="btn-action" style="background: #1e293b;" id="btn-check" onclick="handleAction('check_status')">ตรวจสอบข้อมูล</button>
             <div id="alert-check" class="alert"></div>
+        </div>
+    </div>
+
+    <!-- Contact Support Section -->
+    <div style="background: white; border-radius: 24px; padding: 40px; text-align: center; border: 1px solid var(--border); box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);">
+        <h3 style="margin-bottom: 20px;"><i class="fab fa-line" style="color: #06c755;"></i> ติดต่อสอบถาม / แจ้งปัญหา</h3>
+        <div style="display: flex; flex-direction: column; align-items: center; gap: 20px;">
+            <div style="width: 180px; height: 180px; background: #f1f5f9; border-radius: 12px; display: flex; align-items: center; justify-content: center; border: 2px dashed #cbd5e1;">
+                <!-- คุณสามารถนำ URL รูป QR Code มาใส่ใน src ด้านล่างนี้ได้เลยครับ -->
+                <img src="https://via.placeholder.com/180x180?text=LINE+QR+CODE" alt="Line QR Code" style="width: 100%; border-radius: 10px;">
+            </div>
+            <div>
+                <p style="color: var(--text-muted); margin-bottom: 15px;">สแกน QR Code หรือกดปุ่มด้านล่างเพื่อแอดไลน์สอบถามได้ทันที</p>
+                <a href="https://line.me/ti/p/~YOUR_LINE_ID" target="_blank" class="btn-action" style="background: #06c755; text-decoration: none; display: inline-flex; align-items: center; justify-content: center; width: auto; padding: 12px 30px;">
+                    <i class="fab fa-line" style="margin-right: 10px; font-size: 1.5rem;"></i> เพิ่มเพื่อนใน Line
+                </a>
+            </div>
         </div>
     </div>
   </div>
