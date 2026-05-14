@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GeoPortal - KaiGeoTools</title>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700&family=Prompt:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --primary: #4f46e5;
+      --primary-hover: #4338ca;
+      --bg: #f8fafc;
+      --card-bg: #ffffff;
+      --text-main: #1e293b;
+      --text-muted: #64748b;
+      --border: #e2e8f0;
+      --radius: 16px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Prompt', sans-serif; background: var(--bg); color: var(--text-main); line-height: 1.6; }
+
+    /* Navbar */
+    .navbar {
+      background: rgba(255, 255, 255, 0.8);
+      backdrop-filter: blur(10px);
+      padding: 1rem 8%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      border-bottom: 1px solid var(--border);
+    }
+    .brand { font-size: 1.5rem; font-weight: 700; color: var(--primary); text-decoration: none; display: flex; align-items: center; gap: 10px; }
+    .nav-links button { background: none; border: none; margin-left: 15px; font-family: 'Prompt'; cursor: pointer; color: var(--text-muted); font-weight: 500; transition: 0.3s; }
+    .nav-links button:hover, .nav-links button.active { color: var(--primary); }
+
+    /* Hero */
+    .hero { padding: 80px 8% 120px; text-align: center; background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%); }
+    .hero h1 { font-size: 3rem; font-weight: 800; margin-bottom: 1rem; color: #0f172a; }
+    .hero p { font-size: 1.2rem; color: var(--text-muted); max-width: 700px; margin: 0 auto; }
+
+    /* Panels */
+    .container { max-width: 1100px; margin: -60px auto 100px; padding: 0 20px; }
+    .panel { background: white; border-radius: var(--radius); padding: 50px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); display: none; border: 1px solid var(--border); }
+    .panel.active { display: block; animation: fadeIn 0.5s ease-out; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* Pricing Grid */
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; margin-top: 20px; }
+    .card { background: white; border: 2px solid var(--border); border-radius: var(--radius); padding: 40px; text-align: center; transition: 0.3s; }
+    .card.featured { border-color: var(--primary); transform: scale(1.02); }
+    .price { font-size: 3rem; font-weight: 800; margin: 20px 0; color: #0f172a; }
+    .features { list-style: none; text-align: left; margin-bottom: 30px; }
+    .features li { margin-bottom: 12px; display: flex; align-items: center; gap: 10px; }
+    .features li i { color: #10b981; }
+
+    /* Forms */
+    .form-wrapper { max-width: 450px; margin: 0 auto; }
+    .form-group { margin-bottom: 20px; }
+    label { display: block; margin-bottom: 8px; font-weight: 600; font-size: 0.9rem; }
+    input { width: 100%; padding: 14px; border: 2px solid var(--border); border-radius: 10px; font-size: 1rem; outline: none; transition: 0.3s; }
+    input:focus { border-color: var(--primary); }
+    .btn-submit { width: 100%; padding: 16px; background: var(--primary); color: white; border: none; border-radius: 10px; font-size: 1.1rem; font-weight: 700; cursor: pointer; transition: 0.3s; }
+    .btn-submit:hover { background: var(--primary-hover); transform: translateY(-2px); }
+
+    /* Alerts */
+    .alert { margin-top: 20px; padding: 15px; border-radius: 10px; display: none; font-weight: 500; text-align: center; }
+    .alert-success { background: #ecfdf5; color: #065f46; border: 1px solid #a7f3d0; }
+    .alert-error { background: #fef2f2; color: #991b1b; border: 1px solid #fecaca; }
+
+    .spinner { width: 20px; height: 20px; border: 3px solid rgba(255,255,255,0.3); border-top-color: white; border-radius: 50%; animation: spin 0.8s linear infinite; display: inline-block; vertical-align: middle; margin-right: 10px; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    footer { padding: 40px; text-align: center; color: var(--text-muted); font-size: 0.9rem; }
+  </style>
+</head>
+<body>
+
+<nav class="navbar">
+  <a href="#" class="brand" onclick="showPanel('home')"><i class="fas fa-layer-group"></i> GeoPortal</a>
+  <div class="nav-links">
+    <button id="nav-home" class="active" onclick="showPanel('home')">หน้าแรก</button>
+    <button id="nav-pricing" onclick="showPanel('pricing')">โปรโมชั่น</button>
+    <button id="nav-register" onclick="showPanel('register')">สมัครสมาชิก</button>
+    <button id="nav-activate" onclick="showPanel('activate')">ต่ออายุ</button>
+    <button id="nav-check" onclick="showPanel('check')">เช็คสถานะ</button>
+  </div>
+</nav>
+
+<div class="hero">
+  <h1>Smart GIS Management</h1>
+  <p>ระบบบริหารจัดการสมาชิกและเครื่องมือ KaiGeoTools สำหรับมืออาชีพ</p>
+</div>
+
+<div class="container">
+  <!-- Home Panel -->
+  <div id="panel-home" class="panel active">
+    <h2 style="margin-bottom: 20px; color: var(--primary);">ยินดีต้อนรับสู่ระบบ GeoPortal</h2>
+    <p>ศูนย์กลางการจัดการสิทธิ์และต่ออายุการใช้งานปลั๊กอิน KaiGeoTools สำหรับ QGIS</p>
+    <div class="grid" style="grid-template-columns: 1fr 1fr; margin-top: 30px;">
+        <div style="background: #f1f5f9; padding: 25px; border-radius: 12px;">
+            <h3 style="margin-bottom: 10px;"><i class="fas fa-bolt" style="color: #eab308;"></i> รวดเร็วและง่าย</h3>
+            <p>สมัครสมาชิกและรับสิทธิ์ทดลองใช้ได้ทันทีผ่านระบบอัตโนมัติ</p>
+        </div>
+        <div style="background: #f1f5f9; padding: 25px; border-radius: 12px;">
+            <h3 style="margin-bottom: 10px;"><i class="fas fa-shield-alt" style="color: #10b981;"></i> ปลอดภัย</h3>
+            <p>ระบบจัดการสิทธิ์รายเครื่อง ป้องกันการละเมิดลิขสิทธิ์อย่างมีประสิทธิภาพ</p>
+        </div>
+    </div>
+  </div>
+
+  <!-- Pricing Panel -->
+  <div id="panel-pricing" class="panel">
+    <h2 style="text-align: center; margin-bottom: 30px;">เลือกแผนการใช้งาน</h2>
+    <div class="grid">
+      <div class="card">
+        <h3>Trial Pack</h3>
+        <div class="price">ฟรี</div>
+        <ul class="features">
+          <li><i class="fas fa-check"></i> ใช้งานได้ทุกฟีเจอร์ 60 วัน</li>
+          <li><i class="fas fa-check"></i> รองรับ 1 เครื่องใช้งาน</li>
+          <li><i class="fas fa-check"></i> สมัครแล้วใช้ได้ทันที</li>
+        </ul>
+        <button class="btn-submit" onclick="showPanel('register')">สมัครทดลองใช้</button>
+      </div>
+      <div class="card featured">
+        <h3>Support Plan</h3>
+        <div class="price">750 <span style="font-size: 1rem; color: var(--text-muted);">บาท/ปี</span></div>
+        <ul class="features">
+          <li><i class="fas fa-check"></i> ใช้งานได้ 1 ปีเต็ม (365 วัน)</li>
+          <li><i class="fas fa-check"></i> บริการช่วยเหลือพิเศษ</li>
+          <li><i class="fas fa-check"></i> อัปเดตฟีเจอร์ใหม่ก่อนใคร</li>
+        </ul>
+        <button class="btn-submit" onclick="showPanel('activate')">สนับสนุนโครงการ</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Register Panel -->
+  <div id="panel-register" class="panel">
+    <div class="form-wrapper">
+      <h2 style="text-align: center; margin-bottom: 30px;">ลงทะเบียนสมาชิกใหม่</h2>
+      <div class="form-group">
+        <label>Username</label>
+        <input type="text" id="reg-user" placeholder="ระบุชื่อผู้ใช้ (4-15 ตัว)">
+      </div>
+      <div class="form-group">
+        <label>Password</label>
+        <input type="password" id="reg-pass" placeholder="ระบุรหัสผ่าน (6 ตัวขึ้นไป)">
+      </div>
+      <button class="btn-submit" id="btn-register" onclick="runAction('register')">สร้างบัญชีรับสิทธิ์ฟรี 60 วัน</button>
+      <div id="alert-register" class="alert"></div>
+    </div>
+  </div>
+
+  <!-- Activate Panel -->
+  <div id="panel-activate" class="panel">
+    <div class="form-wrapper">
+      <h2 style="text-align: center; margin-bottom: 30px;">ต่ออายุ / เปิดใช้งานรหัส</h2>
+      <div class="form-group">
+        <label>Username</label>
+        <input type="text" id="act-user" placeholder="ระบุ Username ของคุณ">
+      </div>
+      <div class="form-group">
+        <label>Activation Key</label>
+        <input type="text" id="act-key" placeholder="KAI-XXXX-XXXX">
+      </div>
+      <button class="btn-submit" id="btn-activate" onclick="runAction('activate_key')">ยืนยันการต่ออายุ</button>
+      <div id="alert-activate" class="alert"></div>
+    </div>
+  </div>
+
+  <!-- Check Panel -->
+  <div id="panel-check" class="panel">
+    <div class="form-wrapper">
+      <h2 style="text-align: center; margin-bottom: 30px;">ตรวจสอบสถานะ</h2>
+      <div class="form-group">
+        <label>Username</label>
+        <input type="text" id="chk-user" placeholder="ระบุ Username">
+      </div>
+      <button class="btn-submit" id="btn-check" onclick="runAction('check_status')">เช็ควันหมดอายุ</button>
+      <div id="alert-check" class="alert"></div>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <p>&copy; 2024 KaiGeoTools - Smart GIS Solution</p>
+</footer>
+
+<script>
+  /**
+   * สำคัญ: เปลี่ยน URL นี้ให้เป็นลิงก์ Web App ของคุณที่ Deploy จาก Google Apps Script
+   */
+  const API_URL = 'YOUR_GAS_WEBAPP_URL_HERE'; 
+
+  function showPanel(id) {
+    document.querySelectorAll('.nav-links button').forEach(b => b.classList.remove('active'));
+    document.getElementById('nav-' + id).classList.add('active');
+    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+    document.getElementById('panel-' + id).classList.add('active');
+    window.scrollTo({ top: (id === 'home' ? 0 : 300), behavior: 'smooth' });
+  }
+
+  async function hash(p) {
+    const encoder = new TextEncoder();
+    const data = encoder.encode(p);
+    const h = await crypto.subtle.digest('SHA-256', data);
+    return Array.from(new Uint8Array(h)).map(b => b.toString(16).padStart(2, '0')).join('');
+  }
+
+  async function runAction(action) {
+    let payload = { action: action };
+    let btnId = 'btn-' + (action.includes('check') ? 'check' : (action.includes('activate') ? 'activate' : 'register'));
+    let alertId = 'alert-' + (action.includes('check') ? 'check' : (action.includes('activate') ? 'activate' : 'register'));
+    
+    if (action === 'register') {
+      payload.username = document.getElementById('reg-user').value.trim();
+      const p = document.getElementById('reg-pass').value;
+      if (payload.username.length < 4 || p.length < 6) return showAlert(alertId, "ข้อมูลไม่ถูกต้อง", "error");
+      payload.password_hash = await hash(p);
+    } else if (action === 'activate_key') {
+      payload.username = document.getElementById('act-user').value.trim();
+      payload.key = document.getElementById('act-key').value.trim();
+      if (!payload.username || !payload.key) return;
+    } else {
+      payload.action = 'login';
+      payload.username = document.getElementById('chk-user').value.trim();
+      payload.password_hash = 'CHECK_ONLY_NO_LOGIN';
+    }
+
+    if (API_URL.includes('YOUR_GAS')) return showAlert(alertId, "กรุณาตั้งค่า API_URL ในไฟล์ Index.html", "error");
+
+    setLoading(btnId, true);
+    try {
+      const response = await fetch(API_URL, { method: 'POST', body: JSON.stringify(payload) });
+      const res = await response.json();
+      let m = res.message;
+      if (res.expiry_date) m += "<br>หมดอายุ: " + res.expiry_date;
+      showAlert(alertId, m, res.status === 'success' ? 'success' : 'error');
+    } catch (e) {
+      showAlert(alertId, "การเชื่อมต่อล้มเหลว", "error");
+    }
+    setLoading(btnId, false);
+  }
+
+  function showAlert(id, txt, type) {
+    const el = document.getElementById(id);
+    el.style.display = 'block';
+    el.className = 'alert alert-' + type;
+    el.innerHTML = txt;
+  }
+
+  function setLoading(id, is) {
+    const b = document.getElementById(id);
+    if (is) { b.disabled = true; b.innerHTML = '<span class="spinner"></span> ประมวลผล...'; }
+    else { b.disabled = false; b.innerText = id.includes('reg') ? 'สร้างบัญชีรับสิทธิ์ฟรี 60 วัน' : (id.includes('act') ? 'ยืนยันการต่ออายุ' : 'เช็ควันหมดอายุ'); }
+  }
+</script>
+
+</body>
+</html>
