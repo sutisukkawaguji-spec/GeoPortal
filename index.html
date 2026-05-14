@@ -347,9 +347,10 @@
       showAlert(alertId, m, res.status === 'success' ? 'success' : 'error');
     } catch (e) {
       console.error("Fetch Error:", e);
-      showAlert(alertId, `<b>เชื่อมต่อไม่สำเร็จ:</b><br>1. ตรวจสอบว่าตั้งค่าสคริปต์เป็น 'Anyone' หรือยัง<br>2. ลองเปิดลิงก์ <a href="${API_URL}" target="_blank">นี้</a> ในแท็บใหม่ ถ้าขึ้น Error แสดงว่าสคริปต์ใช้ได้`, "error");
+      showAlert(alertId, `<b>เชื่อมต่อไม่สำเร็จ:</b><br>กรุณาตรวจสอบอินเทอร์เน็ต หรือการตั้งค่าสคริปต์ (Anyone)`, "error");
+    } finally {
+      setLoading(btnId, false); // มั่นใจว่าปุ่มจะกลับมาเป็นปกติเสมอ
     }
-    setLoading(btnId, false);
   }
 
   function showAlert(id, txt, type) {
