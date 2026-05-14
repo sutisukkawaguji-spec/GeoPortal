@@ -328,24 +328,23 @@
 
     setLoading(btnId, true);
     try {
+      // ใช้เทคนิคส่งแบบ text/plain เพื่อหลีกเลี่ยงปัญหา CORS Preflight ในเบราว์เซอร์
       const response = await fetch(API_URL, { 
         method: 'POST', 
-        mode: 'no-cors', // เพิ่มโหมดนี้เพื่อลดปัญหา CORS
-        body: JSON.stringify(payload) 
+        body: JSON.stringify(payload),
+        headers: {
+          'Content-Type': 'text/plain;charset=utf-8'
+        }
       });
       
-      // หมายเหตุ: Google Apps Script Web App มักมีปัญหา CORS กับ fetch ตรงๆ
-      // หาก fetch แบบปกติไม่ได้ เราอาจต้องเปลี่ยนไปใช้เทคนิคอื่น แต่เบื้องต้นลองปรับ payload ให้ครบก่อนครับ
-      
-      // ลองเรียกแบบปกติอีกรอบเพื่อเอาข้อมูล JSON
-      const normalResponse = await fetch(API_URL, { method: 'POST', body: JSON.stringify(payload) });
-      const res = await normalResponse.json();
+      const res = await response.json();
       
       let m = res.message;
       if (res.expiry_date) m += "<br>หมดอายุ: " + res.expiry_date;
       showAlert(alertId, m, res.status === 'success' ? 'success' : 'error');
     } catch (e) {
-      showAlert(alertId, "การเชื่อมต่อขัดข้อง (กรุณาตรวจสอบการ Deploy สคริปต์)", "error");
+      console.error("Fetch Error:", e);
+      showAlert(alertId, "การเชื่อมต่อขัดข้อง: " + e.message, "error");
     }
     setLoading(btnId, false);
   }
