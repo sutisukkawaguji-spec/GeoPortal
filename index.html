@@ -315,6 +315,26 @@
 <script>
     const API_URL = 'https://script.google.com/macros/s/AKfycbwrlxyCsv9mIMPE_YorHs0JZNTE5GVA-6_lZaU-2AYlyMviZ4w-KwOjQwYKNXu58tq9/exec';
     
+    // Device Fingerprinting
+    function getDeviceId() {
+        // 1. ตรวจสอบว่ามี machine_id ส่งมาจากโปรแกรม QGIS หรือไม่ (Hardware ID)
+        const urlParams = new URLSearchParams(window.location.search);
+        const qgisMachineId = urlParams.get('machine_id');
+        
+        if (qgisMachineId) {
+            console.log("Using Hardware ID from QGIS:", qgisMachineId);
+            return qgisMachineId;
+        }
+
+        // 2. ถ้าไม่มี (เข้าเว็บตรงๆ) ให้ใช้รหัสจำเครื่องในเบราว์เซอร์เดิม
+        let deviceId = localStorage.getItem('geotools_device_id');
+        if (!deviceId) {
+            deviceId = 'DEV-' + Math.random().toString(36).substr(2, 9).toUpperCase() + '-' + Date.now();
+            localStorage.setItem('geotools_device_id', deviceId);
+        }
+        return deviceId;
+    }
+    
     // Auth State
     let currentUser = null;
 
@@ -398,7 +418,8 @@
         let payload = { 
             action: action, 
             is_web_portal: true,
-            secret_key: 'kai_geotools_secret_2024' 
+            secret_key: 'kai_geotools_secret_2024',
+            device_id: getDeviceId() // ส่งรหัสเครื่องไปด้วยเสมอ
         };
         let btnId = 'btn-' + action;
         let alertId = 'alert-' + action;
@@ -409,9 +430,15 @@
             const p = document.getElementById('reg-pass').value;
             payload.organization = document.getElementById('reg-org').value.trim();
             payload.occupation = document.getElementById('reg-job').value.trim();
-            if (payload.username.length < 2 || p.length < 4) return showAlert(alertId, "ข้อมูลสั้นเกินไป", "error");
-            if (!payload.email.includes('@')) return showAlert(alertId, "รูปแบบอีเมลไม่ถูกต้อง", "error");
-            if (!payload.organization || !payload.occupation) return showAlert(alertId, "กรุณากรอกข้อมูลให้ครบ", "error");
+            
+            // Email Validation (Regex)
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            
+            if (payload.username.length < 4) return showAlert(alertId, "Username ต้องมีอย่างน้อย 4 ตัวอักษร", "error");
+            if (!emailRegex.test(payload.email)) return showAlert(alertId, "รูปแบบอีเมลไม่ถูกต้อง", "error");
+            if (p.length < 6) return showAlert(alertId, "รหัสผ่านต้องมีอย่างน้อย 6 ตัวอักษรเพื่อความปลอดภัย", "error");
+            if (!payload.organization || !payload.occupation) return showAlert(alertId, "กรุณากรอกข้อมูลให้ครบทุกช่อง", "error");
+            
             payload.password_hash = await hash(p);
         } else if (action === 'login') {
             payload.username = document.getElementById('login-user').value.trim();
