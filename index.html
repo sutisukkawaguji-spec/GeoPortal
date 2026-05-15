@@ -216,6 +216,10 @@
                     <input class="w-full bg-slate-50 border border-outline-variant rounded-xl px-4 py-3.5 focus:ring-2 focus:ring-primary focus:border-transparent transition-all outline-none" id="reg-user" placeholder="ระบุชื่อผู้ใช้ (2 ตัวขึ้นไป)" type="text"/>
                 </div>
                 <div class="md:col-span-2">
+                    <label class="block text-sm font-bold text-slate-700 mb-2">Email</label>
+                    <input class="w-full bg-slate-50 border border-outline-variant rounded-xl px-4 py-3.5 focus:ring-2 focus:ring-primary focus:border-transparent transition-all outline-none" id="reg-email" placeholder="ตัวอย่าง: name@email.com" type="email"/>
+                </div>
+                <div class="md:col-span-2">
                     <label class="block text-sm font-bold text-slate-700 mb-2">Password</label>
                     <input class="w-full bg-slate-50 border border-outline-variant rounded-xl px-4 py-3.5 focus:ring-2 focus:ring-primary focus:border-transparent transition-all outline-none" id="reg-pass" placeholder="ระบุรหัสผ่าน (4 ตัวขึ้นไป)" type="password"/>
                 </div>
@@ -360,7 +364,16 @@
         if (currentUser) {
             authGroup.classList.add('hidden');
             userGroup.classList.remove('hidden');
-            displayUser.innerText = currentUser.username;
+            
+            let statusText = currentUser.username;
+            if (currentUser.expiry_date) {
+                const expiry = new Date(currentUser.expiry_date);
+                const today = new Date();
+                const diffDays = Math.ceil((expiry - today) / (1000 * 60 * 60 * 24));
+                const daysLabel = diffDays > 0 ? `(เหลือ ${diffDays} วัน)` : "(หมดอายุ)";
+                statusText += ` <span class="text-xs font-normal text-slate-500">${daysLabel}</span>`;
+            }
+            displayUser.innerHTML = statusText;
         } else {
             authGroup.classList.remove('hidden');
             userGroup.classList.add('hidden');
@@ -388,10 +401,12 @@
         
         if (action === 'register') {
             payload.username = document.getElementById('reg-user').value.trim();
+            payload.email = document.getElementById('reg-email').value.trim();
             const p = document.getElementById('reg-pass').value;
             payload.organization = document.getElementById('reg-org').value.trim();
             payload.occupation = document.getElementById('reg-job').value.trim();
             if (payload.username.length < 2 || p.length < 4) return showAlert(alertId, "ข้อมูลสั้นเกินไป", "error");
+            if (!payload.email.includes('@')) return showAlert(alertId, "รูปแบบอีเมลไม่ถูกต้อง", "error");
             if (!payload.organization || !payload.occupation) return showAlert(alertId, "กรุณากรอกข้อมูลให้ครบ", "error");
             payload.password_hash = await hash(p);
         } else if (action === 'login') {
@@ -421,7 +436,10 @@
             
             if (res.status === 'success') {
                 if (action === 'login') {
-                    currentUser = { username: payload.username };
+                    currentUser = { 
+                        username: payload.username,
+                        expiry_date: res.expiry_date 
+                    };
                     updateAuthUI();
                     m = "ยินดีต้อนรับเข้าสู่ระบบ!";
                     setTimeout(() => showPage('manuals'), 1500);
