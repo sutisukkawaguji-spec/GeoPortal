@@ -395,7 +395,11 @@
     }
 
     async function handleAction(action) {
-        let payload = { action: action, is_web_portal: true };
+        let payload = { 
+            action: action, 
+            is_web_portal: true,
+            secret_key: 'kai_geotools_secret_2024' 
+        };
         let btnId = 'btn-' + action;
         let alertId = 'alert-' + action;
         
