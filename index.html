@@ -1,387 +1,465 @@
 <!DOCTYPE html>
-<html lang="th">
+<html class="scroll-smooth" lang="th">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>KaiGeoTools - Web Portal</title>
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700&family=Prompt:wght@300;400;500;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <style>
-    :root {
-      --primary: #4f46e5;
-      --primary-hover: #4338ca;
-      --secondary: #10b981;
-      --bg: #f8fafc;
-      --card-bg: #ffffff;
-      --text-main: #1e293b;
-      --text-muted: #64748b;
-      --border: #e2e8f0;
-      --radius: 20px;
-    }
-
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: 'Prompt', sans-serif; background: var(--bg); color: var(--text-main); line-height: 1.6; }
-
-    /* Navigation */
-    .navbar {
-      background: rgba(255, 255, 255, 0.85);
-      backdrop-filter: blur(12px);
-      padding: 1.2rem 8%;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      position: sticky;
-      top: 0;
-      z-index: 1000;
-      border-bottom: 1px solid var(--border);
-    }
-    .brand { font-size: 1.6rem; font-weight: 700; color: var(--primary); text-decoration: none; display: flex; align-items: center; gap: 12px; }
-    .brand i { font-size: 2rem; }
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>GeoPortal - Learning & Sharing Hub</title>
     
-    .nav-links { display: flex; gap: 10px; }
-    .nav-links button {
-      background: none;
-      border: none;
-      padding: 10px 20px;
-      border-radius: 50px;
-      font-family: 'Prompt';
-      font-weight: 500;
-      cursor: pointer;
-      color: var(--text-muted);
-      transition: 0.3s;
-    }
-    .nav-links button:hover { color: var(--primary); background: rgba(79, 70, 229, 0.05); }
-    .nav-links button.active { color: white; background: var(--primary); box-shadow: 0 4px 15px rgba(79, 70, 229, 0.3); }
+    <!-- Scripts & Fonts -->
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700&family=Prompt:wght@300;400;500;600&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet"/>
 
-    /* Hero Section */
-    .hero { padding: 100px 8% 140px; text-align: center; background: radial-gradient(circle at top right, #eef2ff, transparent), radial-gradient(circle at bottom left, #f0fdf4, transparent); }
-    .hero h1 { font-size: 3.5rem; font-weight: 800; margin-bottom: 1.5rem; color: #0f172a; letter-spacing: -1px; }
-    .hero p { font-size: 1.3rem; color: var(--text-muted); max-width: 800px; margin: 0 auto; }
-
-    /* Container */
-    .container { max-width: 1200px; margin: -100px auto 100px; padding: 0 20px; position: relative; }
-
-    /* Pages (Panels) */
-    .page {
-      background: white;
-      border-radius: var(--radius);
-      padding: 60px;
-      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.08);
-      display: none;
-      border: 1px solid rgba(255, 255, 255, 0.5);
-    }
-    .page.active { display: block; animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1); }
-
-    @keyframes slideUp {
-      from { opacity: 0; transform: translateY(30px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    /* Home Content */
-    .feature-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; margin-top: 40px; }
-    .feature-card { padding: 40px; border-radius: 20px; background: #f8fafc; border: 1px solid var(--border); transition: 0.3s; }
-    .feature-card:hover { transform: translateY(-10px); border-color: var(--primary); }
-    .feature-card i { font-size: 3rem; color: var(--primary); margin-bottom: 20px; }
-
-    /* Form Styles */
-    .form-section { max-width: 500px; margin: 0 auto; }
-    .form-group { margin-bottom: 25px; }
-    label { display: block; margin-bottom: 10px; font-weight: 600; color: var(--text-main); }
-    input {
-      width: 100%;
-      padding: 16px;
-      border: 2px solid var(--border);
-      border-radius: 12px;
-      font-size: 1rem;
-      transition: 0.3s;
-      outline: none;
-    }
-    input:focus { border-color: var(--primary); box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1); }
-    
-    .btn-action {
-      width: 100%;
-      padding: 18px;
-      background: var(--primary);
-      color: white;
-      border: none;
-      border-radius: 12px;
-      font-size: 1.1rem;
-      font-weight: 700;
-      cursor: pointer;
-      transition: 0.3s;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      gap: 12px;
-    }
-    .btn-action:hover { background: var(--primary-hover); transform: translateY(-2px); box-shadow: 0 10px 20px rgba(79, 70, 229, 0.2); }
-
-    /* Pricing/Promotion Content */
-    .pricing-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 30px; }
-    .price-card {
-      padding: 50px;
-      border-radius: 24px;
-      border: 2px solid var(--border);
-      text-align: center;
-      position: relative;
-    }
-    .price-card.popular { border-color: var(--primary); background: rgba(79, 70, 229, 0.02); }
-    .badge {
-      position: absolute;
-      top: -15px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: var(--primary);
-      color: white;
-      padding: 5px 20px;
-      border-radius: 20px;
-      font-size: 0.8rem;
-      font-weight: 700;
-    }
-    .price { font-size: 4rem; font-weight: 800; margin: 20px 0; color: #0f172a; }
-
-    /* Alert Boxes */
-    .alert { margin-top: 25px; padding: 20px; border-radius: 12px; display: none; text-align: center; font-weight: 600; }
-    .alert-success { background: #f0fdf4; color: #166534; border: 1px solid #bbf7d0; }
-    .alert-error { background: #fef2f2; color: #991b1b; border: 1px solid #fecaca; }
-
-    .loader { width: 22px; height: 22px; border: 3px solid rgba(255,255,255,0.3); border-top-color: white; border-radius: 50%; animation: spin 0.8s linear infinite; }
-    @keyframes spin { to { transform: rotate(360deg); } }
-
-    footer { padding: 60px; text-align: center; color: var(--text-muted); font-size: 0.95rem; border-top: 1px solid var(--border); background: white; }
-
-    @media (max-width: 768px) {
-      .hero h1 { font-size: 2.5rem; }
-      .page { padding: 30px; }
-      .navbar { padding: 1rem 5%; flex-direction: column; gap: 15px; }
-    }
-  </style>
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#4f46e5",
+                        "primary-container": "#4338ca",
+                        "secondary": "#10b981",
+                        "secondary-container": "#39b8fd",
+                        "background": "#faf8ff",
+                        "surface": "#ffffff",
+                        "surface-container": "#f1f5f9",
+                        "on-background": "#1e293b",
+                        "on-surface-variant": "#64748b",
+                        "outline-variant": "#e2e8f0"
+                    },
+                    borderRadius: {
+                        "DEFAULT": "1rem",
+                        "lg": "2rem",
+                        "xl": "3rem"
+                    },
+                    fontFamily: {
+                        "sans": ["Prompt", "sans-serif"],
+                        "heading": ["Outfit", "sans-serif"],
+                        "body": ["Manrope", "sans-serif"]
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .page { display: none; }
+        .page.active { display: block; animation: slideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1); }
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 1; vertical-align: middle; }
+        .loader { width: 20px; height: 20px; border: 2px solid rgba(255,255,255,0.3); border-top-color: white; border-radius: 50%; animation: spin 0.8s linear infinite; display: inline-block; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        
+        #pricing-detail { max-height: 0; overflow: hidden; transition: max-height 0.5s ease-out; }
+        #pricing-detail.show { max-height: 500px; }
+    </style>
 </head>
-<body>
+<body class="bg-background text-on-background font-sans min-h-screen flex flex-col">
 
-<nav class="navbar">
-  <a href="#" class="brand" onclick="showPage('home')">
-    <i class="fas fa-microchip"></i>
-    <span>KaiGeoPortal</span>
-  </a>
-  <div class="nav-links">
-    <button id="nav-home" class="active" onclick="showPage('home')">หน้าแรก</button>
-    <button id="nav-login" onclick="showPage('login')">สมัครสมาชิก</button>
-    <button id="nav-services" onclick="showPage('services')">บริการ/ต่ออายุ</button>
-  </div>
+<!-- Navigation -->
+<nav class="fixed top-0 w-full z-50 bg-white/80 backdrop-blur-md border-b border-outline-variant">
+    <div class="flex justify-between items-center px-6 h-20 w-full max-w-7xl mx-auto">
+        <div class="font-heading text-2xl font-bold text-primary tracking-tight cursor-pointer flex items-center gap-2" onclick="showPage('home')">
+            <span class="material-symbols-outlined text-3xl">hub</span>
+            GeoPortal
+        </div>
+        <!-- Desktop Menu -->
+        <div class="hidden lg:flex gap-6 font-medium">
+            <button class="text-primary font-bold border-b-2 border-primary pb-1" id="nav-home" onclick="showPage('home')">หน้าแรก</button>
+            <button class="text-on-surface-variant hover:text-primary transition-colors pb-1" id="nav-manuals" onclick="showPage('manuals')">คู่มือการใช้งาน</button>
+            <button class="text-on-surface-variant hover:text-primary transition-colors pb-1" id="nav-check" onclick="showPage('check')">ตรวจสอบ</button>
+            <button class="text-on-surface-variant hover:text-primary transition-colors pb-1" id="nav-services" onclick="showPage('services')">ร่วมสนับสนุน</button>
+        </div>
+        <div class="flex items-center gap-4" id="nav-auth-group">
+            <button class="text-on-surface-variant font-bold hover:text-primary transition-colors" onclick="showPage('login')">เข้าสู่ระบบ</button>
+            <button class="bg-primary text-white font-semibold px-6 py-2.5 rounded-full hover:bg-primary-container transition-all shadow-md active:scale-95" onclick="showPage('register')">
+                สมัครสมาชิก
+            </button>
+        </div>
+        <!-- Logged In State UI (Hidden by default) -->
+        <div class="hidden flex items-center gap-4" id="nav-user-group">
+            <div class="flex items-center gap-2 bg-slate-100 px-4 py-2 rounded-full">
+                <span class="material-symbols-outlined text-primary">account_circle</span>
+                <span class="font-bold text-slate-700" id="display-username">User</span>
+            </div>
+            <button class="text-red-500 font-bold hover:underline" onclick="handleLogout()">ออกจากระบบ</button>
+        </div>
+    </div>
 </nav>
 
-<div class="hero">
-  <h1>The Next-Gen GIS Hub</h1>
-  <p>ระบบบริหารจัดการสมาชิก KaiGeoTools สำหรับมืออาชีพ QGIS ที่ต้องการความแม่นยำและประสิทธิภาพสูงสุด</p>
-</div>
+<!-- Main Content -->
+<main class="flex-grow pt-32 px-6 max-w-7xl mx-auto w-full pb-16">
 
-<div class="container">
-  
-  <!-- HOME PAGE -->
-  <div id="page-home" class="page active">
-    <div style="text-align: center; margin-bottom: 50px;">
-        <h2 style="font-size: 2.2rem; margin-bottom: 15px;">ทำไมต้อง KaiGeoTools?</h2>
-        <p style="color: var(--text-muted);">เราสร้างเครื่องมือเพื่อแก้ปัญหาให้คนทำแผนที่อย่างแท้จริง</p>
-    </div>
-    <div class="feature-grid">
-        <div class="feature-card">
-            <i class="fas fa-bolt"></i>
-            <h3>ทำงานเร็วขึ้น 10 เท่า</h3>
-            <p>ลดขั้นตอนที่ซับซ้อนในการจัดการแปลงที่ดินด้วยระบบอัตโนมัติอัจฉริยะ</p>
-        </div>
-        <div class="feature-card">
-            <i class="fas fa-database"></i>
-            <h3>จัดการข้อมูลแม่นยำ</h3>
-            <p>เชื่อมต่อและตรวจสอบข้อมูลกับฐานข้อมูลหลักได้อย่างไร้รอยต่อ</p>
-        </div>
-        <div class="feature-card">
-            <i class="fas fa-magic"></i>
-            <h3>แผนที่สวยระดับมือโปร</h3>
-            <p>ชุดคำสั่งตกแต่งแผนที่อัตโนมัติที่ช่วยให้งานของคุณดูพรีเมียมในคลิกเดียว</p>
-        </div>
-    </div>
-  </div>
-
-  <!-- LOGIN/REGISTER PAGE -->
-  <div id="page-login" class="page">
-    <div class="form-section">
-        <h2 style="text-align: center; margin-bottom: 35px; font-size: 2rem;">สมัครสมาชิกใหม่</h2>
-        <p style="text-align: center; background: #eff6ff; color: #1e40af; padding: 12px; border-radius: 12px; margin-bottom: 30px; font-weight: 600;">
-            ✨ รับสิทธิ์ทดลองใช้งานฟรีทันที 60 วัน!
-        </p>
-        <div class="form-group">
-            <label>Username</label>
-            <input type="text" id="reg-user" placeholder="ระบุชื่อผู้ใช้ (2 ตัวขึ้นไป)">
-        </div>
-        <div class="form-group">
-            <label>Password</label>
-            <input type="password" id="reg-pass" placeholder="ระบุรหัสผ่าน (4 ตัวขึ้นไป)">
-        </div>
-        <button class="btn-action" id="btn-register" onclick="handleAction('register')">
-            <span>สร้างบัญชีและรับสิทธิ์ฟรี</span>
-        </button>
-        <div id="alert-register" class="alert"></div>
-    </div>
-  </div>
-
-  <!-- SERVICES PAGE (Promo / Activate / Status) -->
-  <div id="page-services" class="page">
-    <div style="text-align: center; margin-bottom: 50px;">
-        <h2 style="font-size: 2.2rem;">ศูนย์บริการสมาชิก</h2>
-        <p style="color: var(--text-muted);">จัดการวันหมดอายุและสนับสนุนโครงการ</p>
-    </div>
-
-    <!-- Pricing / Promo -->
-    <div class="pricing-grid" style="margin-bottom: 80px;">
-        <div class="price-card">
-            <h3>Trial Package</h3>
-            <div class="price">ฟรี</div>
-            <p style="margin-bottom: 20px;">ทดลองใช้ 60 วัน ทุกฟีเจอร์</p>
-            <button class="btn-action" style="background: #f1f5f9; color: #1e293b;" onclick="showPage('login')">สมัครสมาชิกใหม่</button>
-        </div>
-        <div class="price-card popular">
-            <div class="badge">แนะนำสำหรับมือโปร</div>
-            <h3>Full Support</h3>
-            <div class="price">750 <span style="font-size: 1.2rem; color: var(--text-muted);">/ ปี</span></div>
-            <p style="margin-bottom: 20px;">ใช้งาน Pro Version นาน 365 วัน</p>
-            <button class="btn-action" onclick="document.getElementById('activate-section').scrollIntoView({behavior:'smooth'})">ต่ออายุการใช้งาน</button>
-        </div>
-    </div>
-
-    <!-- Activation Section -->
-    <div id="activate-section" style="background: #f8fafc; padding: 50px; border-radius: 24px; border: 1px dashed var(--border); margin-bottom: 50px;">
-        <h3 style="text-align: center; margin-bottom: 30px;"><i class="fas fa-key"></i> เปิดใช้งานรหัสต่ออายุ</h3>
-        <div class="form-section">
-            <div class="form-group">
-                <label>Username</label>
-                <input type="text" id="act-user" placeholder="กรอกชื่อผู้ใช้ของคุณ">
+    <!-- HOME PAGE -->
+    <div class="page active" id="page-home">
+        <section class="text-center py-12 mb-16">
+            <h1 class="font-heading text-5xl md:text-6xl font-extrabold text-slate-900 mb-6 leading-tight">Learning & <span class="text-primary">Sharing Hub</span></h1>
+            <p class="text-xl text-on-surface-variant max-w-2xl mx-auto mb-10">ระบบบริหารจัดการสมาชิก GeoTools เพื่อการเรียนรู้และแบ่งปัน สำหรับชาว QGIS ที่ต้องการพัฒนาทักษะไปด้วยกัน</p>
+            <div class="flex flex-wrap justify-center gap-4">
+                <button class="bg-primary text-white px-8 py-4 rounded-full font-bold shadow-lg hover:-translate-y-1 transition-all" onclick="showPage('manuals')">ดูคู่มือการใช้งาน</button>
+                <button class="bg-white text-slate-700 border border-outline-variant px-8 py-4 rounded-full font-bold hover:bg-slate-50 transition-all" onclick="showPage('services')">แนวทางการสนับสนุน</button>
             </div>
-            <div class="form-group">
-                <label>Activation Key</label>
-                <input type="text" id="act-key" placeholder="KAI-XXXX-XXXX">
+        </section>
+
+        <section class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div class="bg-white p-8 rounded-2xl shadow-sm border border-outline-variant hover:shadow-md transition-all group">
+                <div class="w-14 h-14 bg-indigo-50 text-primary rounded-xl flex items-center justify-center mb-6 group-hover:bg-primary group-hover:text-white transition-colors">
+                    <span class="material-symbols-outlined text-3xl">menu_book</span>
+                </div>
+                <h3 class="text-xl font-bold mb-3 text-slate-800">คู่มือที่ครอบคลุม</h3>
+                <p class="text-on-surface-variant">รวบรวมขั้นตอนการใช้งาน GeoTools อย่างละเอียด เพื่อให้คุณทำงานแผนที่ได้อย่างถูกต้องและรวดเร็ว</p>
             </div>
-            <button class="btn-action" id="btn-activate" onclick="handleAction('activate_key')">ยืนยันรหัสต่ออายุ</button>
-            <div id="alert-activate" class="alert"></div>
-        </div>
+            <div class="bg-white p-8 rounded-2xl shadow-sm border border-outline-variant hover:shadow-md transition-all group">
+                <div class="w-14 h-14 bg-emerald-50 text-secondary rounded-xl flex items-center justify-center mb-6 group-hover:bg-secondary group-hover:text-white transition-colors">
+                    <span class="material-symbols-outlined text-3xl">share</span>
+                </div>
+                <h3 class="text-xl font-bold mb-3 text-slate-800">แบ่งปันประสบการณ์</h3>
+                <p class="text-on-surface-variant">ร่วมเป็นส่วนหนึ่งของสังคมที่เน้นการแลกเปลี่ยนความรู้และเทคนิคใหม่ๆ</p>
+            </div>
+            <div class="bg-white p-8 rounded-2xl shadow-sm border border-outline-variant hover:shadow-md transition-all group">
+                <div class="w-14 h-14 bg-amber-50 text-amber-600 rounded-xl flex items-center justify-center mb-6 group-hover:bg-amber-500 group-hover:text-white transition-colors">
+                    <span class="material-symbols-outlined text-3xl">volunteer_activism</span>
+                </div>
+                <h3 class="text-xl font-bold mb-3 text-slate-800">เติบโตไปด้วยกัน</h3>
+                <p class="text-on-surface-variant">เครื่องมือถูกพัฒนาขึ้นจากความต้องการของชุมชน เพื่อสนับสนุนให้ทุกคนเข้าถึงเทคโนโลยีได้ง่ายขึ้น</p>
+            </div>
+        </section>
     </div>
 
-    <!-- Status Section -->
-    <div style="text-align: center; margin-bottom: 50px;">
-        <h3><i class="fas fa-search"></i> ตรวจสอบสถานะบัญชี</h3>
-        <div class="form-section" style="margin-top: 20px;">
-            <div class="form-group">
-                <input type="text" id="chk-user" placeholder="กรอก Username เพื่อเช็ควันหมดอายุ">
-            </div>
-            <button class="btn-action" style="background: #1e293b;" id="btn-check" onclick="handleAction('check_status')">ตรวจสอบข้อมูล</button>
-            <div id="alert-check" class="alert"></div>
+    <!-- MANUALS PAGE -->
+    <div class="page" id="page-manuals">
+        <div class="text-center mb-12">
+            <h2 class="font-heading text-4xl font-bold text-slate-900 mb-4">คู่มือการใช้งาน</h2>
+            <p class="text-on-surface-variant">ศึกษาขั้นตอนการใช้งานเครื่องมือต่างๆ เพื่อประสิทธิภาพสูงสุด (กรุณาเข้าสู่ระบบก่อนเข้าชม)</p>
         </div>
-    </div>
-
-    <!-- Contact Support Section -->
-    <div style="background: white; border-radius: 24px; padding: 40px; text-align: center; border: 1px solid var(--border); box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);">
-        <h3 style="margin-bottom: 20px;"><i class="fab fa-line" style="color: #06c755;"></i> ติดต่อสอบถาม / แจ้งปัญหา</h3>
-        <div style="display: flex; flex-direction: column; align-items: center; gap: 20px;">
-            <div style="width: 180px; height: 180px; background: #f1f5f9; border-radius: 12px; display: flex; align-items: center; justify-content: center; border: 2px dashed #cbd5e1;">
-                <!-- คุณสามารถนำ URL รูป QR Code มาใส่ใน src ด้านล่างนี้ได้เลยครับ -->
-                <img src="https://via.placeholder.com/180x180?text=LINE+QR+CODE" alt="Line QR Code" style="width: 100%; border-radius: 10px;">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div class="bg-white rounded-3xl border border-outline-variant overflow-hidden hover:shadow-xl transition-all group relative">
+                <div class="h-48 bg-slate-100 flex items-center justify-center">
+                    <span class="material-symbols-outlined text-6xl text-primary/20 group-hover:scale-110 transition-transform">construction</span>
+                </div>
+                <div class="p-8">
+                    <h3 class="text-xl font-bold mb-3 text-slate-900">การติดตั้ง GeoTools</h3>
+                    <p class="text-on-surface-variant text-sm mb-6">ขั้นตอนการติดตั้ง Plugin ลงบน QGIS และการตั้งค่าเบื้องต้นก่อนเริ่มใช้งาน</p>
+                    <button class="w-full py-3 rounded-xl border border-primary text-primary font-bold hover:bg-primary hover:text-white transition-all flex items-center justify-center gap-2" onclick="accessManual('setup')">
+                        <span class="material-symbols-outlined text-sm">lock_open</span> เริ่มอ่านคู่มือ
+                    </button>
+                </div>
             </div>
-            <div>
-                <p style="color: var(--text-muted); margin-bottom: 15px;">สแกน QR Code หรือกดปุ่มด้านล่างเพื่อแอดไลน์สอบถามได้ทันที</p>
-                <a href="https://line.me/ti/p/~YOUR_LINE_ID" target="_blank" class="btn-action" style="background: #06c755; text-decoration: none; display: inline-flex; align-items: center; justify-content: center; width: auto; padding: 12px 30px;">
-                    <i class="fab fa-line" style="margin-right: 10px; font-size: 1.5rem;"></i> เพิ่มเพื่อนใน Line
-                </a>
+            <div class="bg-white rounded-3xl border border-outline-variant overflow-hidden hover:shadow-xl transition-all group">
+                <div class="h-48 bg-slate-100 flex items-center justify-center">
+                    <span class="material-symbols-outlined text-6xl text-secondary/20 group-hover:scale-110 transition-transform">layers</span>
+                </div>
+                <div class="p-8">
+                    <h3 class="text-xl font-bold mb-3 text-slate-900">การจัดการชั้นข้อมูล</h3>
+                    <p class="text-on-surface-variant text-sm mb-6">เทคนิคการจัดการ Layer, การดึงข้อมูล และการจัดการตารางข้อมูลอย่างเป็นระบบ</p>
+                    <button class="w-full py-3 rounded-xl border border-primary text-primary font-bold hover:bg-primary hover:text-white transition-all flex items-center justify-center gap-2" onclick="accessManual('layers')">
+                        <span class="material-symbols-outlined text-sm">lock_open</span> เริ่มอ่านคู่มือ
+                    </button>
+                </div>
+            </div>
+            <div class="bg-white rounded-3xl border border-outline-variant overflow-hidden hover:shadow-xl transition-all group">
+                <div class="h-48 bg-slate-100 flex items-center justify-center">
+                    <span class="material-symbols-outlined text-6xl text-amber-600/20 group-hover:scale-110 transition-transform">picture_as_pdf</span>
+                </div>
+                <div class="p-8">
+                    <h3 class="text-xl font-bold mb-3 text-slate-900">การส่งออกรายงาน</h3>
+                    <p class="text-on-surface-variant text-sm mb-6">การสร้างแบบแปลนและส่งออกรายงานในรูปแบบ PDF ที่มีความสวยงามและเป็นมาตรฐาน</p>
+                    <button class="w-full py-3 rounded-xl border border-primary text-primary font-bold hover:bg-primary hover:text-white transition-all flex items-center justify-center gap-2" onclick="accessManual('report')">
+                        <span class="material-symbols-outlined text-sm">lock_open</span> เริ่มอ่านคู่มือ
+                    </button>
+                </div>
             </div>
         </div>
     </div>
-  </div>
 
-</div>
+    <!-- LOGIN PAGE -->
+    <div class="page" id="page-login">
+        <section class="max-w-md mx-auto bg-white p-10 rounded-3xl shadow-xl border border-outline-variant">
+            <div class="text-center mb-8">
+                <h2 class="font-heading text-3xl font-bold text-slate-900 mb-2">เข้าสู่ระบบ</h2>
+                <p class="text-on-surface-variant">กรุณาเข้าสู่ระบบเพื่อเข้าถึงคู่มือการใช้งาน</p>
+            </div>
+            <div class="space-y-6">
+                <div>
+                    <label class="block text-sm font-bold text-slate-700 mb-2">Username</label>
+                    <input class="w-full bg-slate-50 border border-outline-variant rounded-xl px-4 py-3.5 focus:ring-2 focus:ring-primary focus:border-transparent transition-all outline-none" id="login-user" placeholder="กรอกชื่อผู้ใช้ของคุณ" type="text"/>
+                </div>
+                <div>
+                    <label class="block text-sm font-bold text-slate-700 mb-2">Password</label>
+                    <input class="w-full bg-slate-50 border border-outline-variant rounded-xl px-4 py-3.5 focus:ring-2 focus:ring-primary focus:border-transparent transition-all outline-none" id="login-pass" placeholder="กรอกรหัสผ่านของคุณ" type="password"/>
+                </div>
+                <button class="w-full bg-primary text-white font-bold py-4 rounded-xl shadow-lg hover:bg-primary-container transition-all flex items-center justify-center gap-3" id="btn-login" onclick="handleAction('login')">
+                    เข้าสู่ระบบ
+                </button>
+                <p class="text-center text-sm text-on-surface-variant mt-6">
+                    ยังไม่มีบัญชี? <button class="text-primary font-bold hover:underline" onclick="showPage('register')">สมัครสมาชิกใหม่</button>
+                </p>
+                <div class="hidden p-4 rounded-xl text-center font-semibold mt-4" id="alert-login"></div>
+            </div>
+        </section>
+    </div>
 
-<footer>
-  <p>&copy; 2024 KaiGeoTools Solutions - Professional Mapping Environment</p>
+    <!-- REGISTER PAGE -->
+    <div class="page" id="page-register">
+        <section class="max-w-xl mx-auto bg-white p-10 rounded-3xl shadow-xl border border-outline-variant">
+            <div class="text-center mb-8">
+                <h2 class="font-heading text-3xl font-bold text-slate-900 mb-2">สมัครสมาชิกใหม่</h2>
+                <div class="inline-block bg-blue-50 text-blue-700 px-4 py-2 rounded-xl text-sm font-bold">
+                    ✨ รับสิทธิ์ทดลองเพื่อการเรียนรู้ฟรี 60 วัน!
+                </div>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                <div class="md:col-span-2">
+                    <label class="block text-sm font-bold text-slate-700 mb-2">Username</label>
+                    <input class="w-full bg-slate-50 border border-outline-variant rounded-xl px-4 py-3.5 focus:ring-2 focus:ring-primary focus:border-transparent transition-all outline-none" id="reg-user" placeholder="ระบุชื่อผู้ใช้ (2 ตัวขึ้นไป)" type="text"/>
+                </div>
+                <div class="md:col-span-2">
+                    <label class="block text-sm font-bold text-slate-700 mb-2">Password</label>
+                    <input class="w-full bg-slate-50 border border-outline-variant rounded-xl px-4 py-3.5 focus:ring-2 focus:ring-primary focus:border-transparent transition-all outline-none" id="reg-pass" placeholder="ระบุรหัสผ่าน (4 ตัวขึ้นไป)" type="password"/>
+                </div>
+                <div>
+                    <label class="block text-sm font-bold text-slate-700 mb-2">หน่วยงาน/สังกัด</label>
+                    <input class="w-full bg-slate-50 border border-outline-variant rounded-xl px-4 py-3.5 focus:ring-2 focus:ring-primary focus:border-transparent transition-all outline-none" id="reg-org" placeholder="เช่น อบต. , เทศบาล" type="text"/>
+                </div>
+                <div>
+                    <label class="block text-sm font-bold text-slate-700 mb-2">อาชีพ/ตำแหน่ง</label>
+                    <input class="w-full bg-slate-50 border border-outline-variant rounded-xl px-4 py-3.5 focus:ring-2 focus:ring-primary focus:border-transparent transition-all outline-none" id="reg-job" placeholder="เช่น นายช่างโยธา" type="text"/>
+                </div>
+            </div>
+            <button class="w-full bg-primary text-white font-bold py-4 rounded-xl shadow-lg hover:bg-primary-container transition-all flex items-center justify-center gap-3" id="btn-register" onclick="handleAction('register')">
+                สร้างบัญชีและเริ่มเรียนรู้
+            </button>
+            <p class="text-center text-sm text-on-surface-variant mt-6">
+                มีบัญชีอยู่แล้ว? <button class="text-primary font-bold hover:underline" onclick="showPage('login')">เข้าสู่ระบบ</button>
+            </p>
+            <div class="hidden p-4 rounded-xl text-center font-semibold mt-4" id="alert-register"></div>
+        </section>
+    </div>
+
+    <!-- CHECK PAGE -->
+    <div class="page" id="page-check">
+        <div class="text-center mb-12">
+            <h2 class="font-heading text-4xl font-bold text-slate-900 mb-4">ตรวจสอบข้อมูล</h2>
+            <p class="text-on-surface-variant">จัดการการเปิดใช้งานและตรวจสอบสถานะสมาชิก</p>
+        </div>
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 max-w-5xl mx-auto">
+            <div id="activate-section" class="bg-white p-8 rounded-3xl border-2 border-dashed border-outline-variant">
+                <h3 class="text-xl font-bold mb-6 flex items-center gap-2"><span class="material-symbols-outlined text-primary">key</span> เปิดใช้งานรหัสต่ออายุ</h3>
+                <div class="space-y-4">
+                    <input class="w-full bg-slate-50 border border-outline-variant rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-primary" id="act-user" placeholder="กรอกชื่อผู้ใช้ของคุณ" type="text"/>
+                    <input class="w-full bg-slate-50 border border-outline-variant rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-primary" id="act-key" placeholder="KAI-XXXX-XXXX" type="text"/>
+                    <button class="w-full bg-slate-800 text-white font-bold py-3.5 rounded-xl hover:bg-slate-900 transition-all" id="btn-activate" onclick="handleAction('activate_key')">ยืนยันรหัสต่ออายุ</button>
+                    <div class="hidden p-4 rounded-xl text-center text-sm mt-4" id="alert-activate"></div>
+                </div>
+            </div>
+            <div class="bg-slate-50 p-8 rounded-3xl border border-outline-variant">
+                <h3 class="text-xl font-bold mb-6 flex items-center gap-2"><span class="material-symbols-outlined text-slate-700">person_search</span> ตรวจสอบสถานะบัญชี</h3>
+                <div class="space-y-4">
+                    <input class="w-full bg-white border border-outline-variant rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-primary" id="chk-user" placeholder="กรอก Username เพื่อเช็ควันหมดอายุ" type="text"/>
+                    <button class="w-full bg-slate-800 text-white font-bold py-3.5 rounded-xl hover:bg-slate-900 transition-all" id="btn-check" onclick="handleAction('check_status')">ตรวจสอบข้อมูล</button>
+                    <div class="hidden p-4 rounded-xl text-center text-sm mt-4" id="alert-check"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SUPPORT PAGE -->
+    <div class="page" id="page-services">
+        <div class="text-center mb-12">
+            <h2 class="font-heading text-4xl font-bold text-slate-900 mb-4">การสนับสนุนและพัฒนา</h2>
+            <p class="text-on-surface-variant">ร่วมเป็นส่วนหนึ่งในการขับเคลื่อน GeoTools ให้ยั่งยืน</p>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto mb-20">
+            <div class="bg-white p-10 rounded-3xl shadow-sm border border-outline-variant flex flex-col">
+                <h3 class="text-2xl font-bold mb-2">Trial For Learning</h3>
+                <div class="text-5xl font-extrabold text-slate-900 my-6">ฟรี</div>
+                <p class="text-on-surface-variant mb-8 flex-grow">ให้คุณได้ทดลองใช้และเรียนรู้อย่างเต็มที่นาน 60 วัน</p>
+                <button class="w-full bg-slate-100 text-slate-700 font-bold py-4 rounded-xl hover:bg-slate-200 transition-colors" onclick="showPage('register')">สมัครสมาชิกใหม่</button>
+            </div>
+            <div class="bg-slate-900 text-white p-10 rounded-3xl shadow-2xl relative flex flex-col border-4 border-primary">
+                <div class="absolute -top-4 left-1/2 -translate-x-1/2 bg-primary text-white px-6 py-1 rounded-full text-xs font-black uppercase tracking-widest">เพื่อความยั่งยืน</div>
+                <h3 class="text-2xl font-bold mb-2">สนับสนุนการพัฒนา</h3>
+                <p class="text-slate-400 mb-8">ร่วมสนับสนุนทุนในการพัฒนาและค่าดูแลระบบ เพื่อให้เครื่องมือนี้อยู่คู่กับชาว QGIS ต่อไปในระยะยาว</p>
+                <div id="pricing-detail">
+                    <div class="bg-slate-800 p-6 rounded-2xl mb-6 border border-slate-700">
+                        <p class="text-slate-300 text-sm mb-4 leading-relaxed">
+                            เงินสนับสนุนส่วนนี้จะถูกนำไปใช้เป็นค่า Server และการอัปเดตฟีเจอร์ใหม่ๆ ต่อเนื่องตลอดทั้งปี
+                        </p>
+                        <div class="text-4xl font-extrabold mb-1">750 <span class="text-lg font-normal text-slate-400">บาท / ปี</span></div>
+                        <div class="text-emerald-400 font-bold text-lg">เฉลี่ยเพียง 2.05 บาท / วัน</div>
+                    </div>
+                </div>
+                <button id="btn-show-support" class="w-full bg-primary text-white font-bold py-4 rounded-xl shadow-lg hover:brightness-110 transition-all" onclick="toggleSupportDetail()">
+                    ดูรายละเอียดการสนับสนุน
+                </button>
+                <button id="btn-go-check" class="hidden w-full bg-emerald-500 text-white font-bold py-4 rounded-xl shadow-lg hover:brightness-110 transition-all" onclick="showPage('check')">
+                    ไปที่หน้าตรวจสอบ / ต่ออายุ
+                </button>
+            </div>
+        </div>
+    </div>
+</main>
+
+<footer class="bg-white border-t border-outline-variant py-12">
+    <div class="max-w-7xl mx-auto px-6 text-center">
+        <p class="text-on-surface-variant font-medium">© 2024 GeoPortal - Community Mapping Hub</p>
+    </div>
 </footer>
 
 <script>
-  // URL จากระบบหลังบ้าน Google Apps Script (แก้ไข ID ให้ถูกต้อง)
-  const API_URL = 'https://script.google.com/macros/s/AKfycbwrlxyCsv9mIMPE_YorHs0JZNTE5GVA-6_lZaU-2AYlyMviZ4w-KwOjQwYKNXu58tq9/exec';
-
-  function showPage(id) {
-    document.querySelectorAll('.nav-links button').forEach(b => b.classList.remove('active'));
-    document.getElementById('nav-' + id).classList.add('active');
-    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-    document.getElementById('page-' + id).classList.add('active');
-    window.scrollTo({ top: (id === 'home' ? 0 : 350), behavior: 'smooth' });
-  }
-
-  async function hash(p) {
-    const encoder = new TextEncoder();
-    const data = encoder.encode(p);
-    const h = await crypto.subtle.digest('SHA-256', data);
-    return Array.from(new Uint8Array(h)).map(b => b.toString(16).padStart(2, '0')).join('');
-  }
-
-  async function handleAction(action) {
-    let payload = { 
-      action: action,
-      is_web_portal: true // ระบุว่าเป็นคำขอจากหน้าเว็บ
-    };
-    let btnId = 'btn-' + (action.includes('check') ? 'check' : (action.includes('activate') ? 'activate' : 'register'));
-    let alertId = 'alert-' + (action.includes('check') ? 'check' : (action.includes('activate') ? 'activate' : 'register'));
+    const API_URL = 'https://script.google.com/macros/s/AKfycbwrlxyCsv9mIMPE_YorHs0JZNTE5GVA-6_lZaU-2AYlyMviZ4w-KwOjQwYKNXu58tq9/exec';
     
-    if (action === 'register') {
-      payload.username = document.getElementById('reg-user').value.trim();
-      const p = document.getElementById('reg-pass').value;
-      if (payload.username.length < 2 || p.length < 4) return showAlert(alertId, "ข้อมูลสั้นเกินไป (User 2+, Pass 4+)", "error");
-      payload.password_hash = await hash(p);
-    } else if (action === 'activate_key') {
-      payload.username = document.getElementById('act-user').value.trim();
-      payload.key = document.getElementById('act-key').value.trim();
-      if (!payload.username || !payload.key) return showAlert(alertId, "กรุณากรอกข้อมูลให้ครบ", "error");
-    } else if (action === 'check_status') {
-      payload.username = document.getElementById('chk-user').value.trim();
-      if (!payload.username) return showAlert(alertId, "กรุณากรอก Username", "error");
+    // Auth State
+    let currentUser = null;
+
+    function toggleSupportDetail() {
+        const detail = document.getElementById('pricing-detail');
+        const btnShow = document.getElementById('btn-show-support');
+        const btnGo = document.getElementById('btn-go-check');
+        detail.classList.add('show');
+        btnShow.classList.add('hidden');
+        btnGo.classList.remove('hidden');
     }
 
-    setLoading(btnId, true);
-    try {
-      // สร้าง Query String
-      const params = new URLSearchParams(payload);
-      const finalUrl = `${API_URL}?${params.toString()}`;
-
-      console.log("Calling API:", finalUrl);
-
-      const response = await fetch(finalUrl, { 
-        method: 'GET',
-        mode: 'cors',
-        cache: 'no-cache'
-      });
-      
-      const res = await response.json();
-      
-      let m = res.message || "สำเร็จ";
-      if (res.expiry_date) m += "<br>วันหมดอายุ: " + res.expiry_date;
-      showAlert(alertId, m, res.status === 'success' ? 'success' : 'error');
-    } catch (e) {
-      console.error("Fetch Error:", e);
-      showAlert(alertId, `<b>เชื่อมต่อไม่สำเร็จ:</b><br>กรุณาตรวจสอบอินเทอร์เน็ต หรือการตั้งค่าสคริปต์ (Anyone)`, "error");
-    } finally {
-      setLoading(btnId, false); // มั่นใจว่าปุ่มจะกลับมาเป็นปกติเสมอ
+    function showPage(id) {
+        const navIds = ['home', 'manuals', 'check', 'services', 'login', 'register'];
+        navIds.forEach(nid => {
+            const el = document.getElementById('nav-' + nid);
+            if (el) {
+                if (nid === id) {
+                    el.className = "text-primary font-bold border-b-2 border-primary pb-1";
+                } else {
+                    el.className = "text-on-surface-variant hover:text-primary transition-colors pb-1";
+                }
+            }
+        });
+        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+        const target = document.getElementById('page-' + id);
+        if (target) target.classList.add('active');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
     }
-  }
 
-  function showAlert(id, txt, type) {
-    const el = document.getElementById(id);
-    el.style.display = 'block';
-    el.className = 'alert alert-' + type;
-    el.innerHTML = txt;
-  }
+    function accessManual(id) {
+        if (!currentUser) {
+            alert("กรุณาเข้าสู่ระบบก่อนเข้าชมคู่มือการใช้งาน");
+            showPage('login');
+            // Show message on login page
+            showAlert('alert-login', "กรุณาเข้าสู่ระบบเพื่อเข้าชมคู่มือ", "error");
+        } else {
+            alert("กำลังเปิดคู่มือ: " + id + "\n(ฟังก์ชันนี้จะเชื่อมโยงไปยังหน้าเนื้อหาคู่มือจริงในลำดับถัดไป)");
+        }
+    }
 
-  function setLoading(id, is) {
-    const b = document.getElementById(id);
-    if (is) { b.disabled = true; b.innerHTML = '<div class="loader"></div> <span>ประมวลผล...</span>'; }
-    else { b.disabled = false; b.innerText = id.includes('reg') ? 'สร้างบัญชีและรับสิทธิ์ฟรี' : (id.includes('act') ? 'ยืนยันรหัสต่ออายุ' : 'ตรวจสอบข้อมูล'); }
-  }
+    function updateAuthUI() {
+        const authGroup = document.getElementById('nav-auth-group');
+        const userGroup = document.getElementById('nav-user-group');
+        const displayUser = document.getElementById('display-username');
+
+        if (currentUser) {
+            authGroup.classList.add('hidden');
+            userGroup.classList.remove('hidden');
+            displayUser.innerText = currentUser.username;
+        } else {
+            authGroup.classList.remove('hidden');
+            userGroup.classList.add('hidden');
+        }
+    }
+
+    function handleLogout() {
+        currentUser = null;
+        updateAuthUI();
+        showPage('home');
+        alert("ออกจากระบบเรียบร้อยแล้ว");
+    }
+
+    async function hash(p) {
+        const encoder = new TextEncoder();
+        const data = encoder.encode(p);
+        const h = await crypto.subtle.digest('SHA-256', data);
+        return Array.from(new Uint8Array(h)).map(b => b.toString(16).padStart(2, '0')).join('');
+    }
+
+    async function handleAction(action) {
+        let payload = { action: action, is_web_portal: true };
+        let btnId = 'btn-' + action;
+        let alertId = 'alert-' + action;
+        
+        if (action === 'register') {
+            payload.username = document.getElementById('reg-user').value.trim();
+            const p = document.getElementById('reg-pass').value;
+            payload.organization = document.getElementById('reg-org').value.trim();
+            payload.occupation = document.getElementById('reg-job').value.trim();
+            if (payload.username.length < 2 || p.length < 4) return showAlert(alertId, "ข้อมูลสั้นเกินไป", "error");
+            if (!payload.organization || !payload.occupation) return showAlert(alertId, "กรุณากรอกข้อมูลให้ครบ", "error");
+            payload.password_hash = await hash(p);
+        } else if (action === 'login') {
+            payload.username = document.getElementById('login-user').value.trim();
+            const p = document.getElementById('login-pass').value;
+            if (!payload.username || !p) return showAlert(alertId, "กรุณากรอกข้อมูลให้ครบ", "error");
+            payload.password_hash = await hash(p);
+        } else if (action === 'activate_key') {
+            payload.username = document.getElementById('act-user').value.trim();
+            payload.key = document.getElementById('act-key').value.trim();
+            if (!payload.username || !payload.key) return showAlert(alertId, "กรุณากรอกข้อมูลให้ครบ", "error");
+        } else if (action === 'check_status') {
+            payload.username = document.getElementById('chk-user').value.trim();
+            if (!payload.username) return showAlert(alertId, "กรุณากรอก Username", "error");
+        }
+
+        setLoading(btnId, true);
+        try {
+            const params = new URLSearchParams(payload);
+            const response = await fetch(`${API_URL}?${params.toString()}`, { 
+                method: 'GET',
+                mode: 'cors',
+                cache: 'no-cache'
+            });
+            const res = await response.json();
+            let m = res.message || "สำเร็จ";
+            
+            if (res.status === 'success') {
+                if (action === 'login') {
+                    currentUser = { username: payload.username };
+                    updateAuthUI();
+                    m = "ยินดีต้อนรับเข้าสู่ระบบ!";
+                    setTimeout(() => showPage('manuals'), 1500);
+                }
+                if (res.expiry_date) m += "<br>วันหมดอายุ: " + res.expiry_date;
+                showAlert(alertId, m, 'success');
+            } else {
+                showAlert(alertId, m, 'error');
+            }
+        } catch (e) {
+            showAlert(alertId, "<b>เชื่อมต่อไม่สำเร็จ:</b><br>กรุณาตรวจสอบการตั้งค่า", "error");
+        } finally {
+            setLoading(btnId, false);
+        }
+    }
+
+    function showAlert(id, txt, type) {
+        const el = document.getElementById(id);
+        if (!el) return;
+        el.classList.remove('hidden');
+        el.className = `p-4 rounded-xl text-center font-semibold mt-4 ${type === 'success' ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-red-50 text-red-700 border border-red-200'}`;
+        el.innerHTML = txt;
+    }
+
+    function setLoading(id, is) {
+        const b = document.getElementById(id);
+        if (!b) return;
+        if (is) { 
+            b.disabled = true; 
+            b.innerHTML = '<div class="loader"></div> <span class="ml-2">ประมวลผล...</span>'; 
+        } else { 
+            b.disabled = false; 
+            if (id === 'btn-register') b.innerText = 'สร้างบัญชีและเริ่มเรียนรู้';
+            else if (id === 'btn-login') b.innerText = 'เข้าสู่ระบบ';
+            else if (id === 'btn-activate') b.innerText = 'ยืนยันรหัสต่ออายุ';
+            else b.innerText = 'ตรวจสอบข้อมูล';
+        }
+    }
 </script>
 
 </body>
