@@ -930,6 +930,9 @@
         
         const tbody = document.getElementById('user-keys-tbody');
         if (tbody) tbody.innerHTML = '<tr><td colspan="5" class="text-center py-6 text-slate-500">กรุณาเข้าสู่ระบบ</td></tr>';
+        
+        const keysContainer = document.getElementById('dashboard-keys-container');
+        if (keysContainer) keysContainer.innerHTML = '<div class="text-center text-slate-500 py-4">กรุณาเข้าสู่ระบบ</div>';
 
         if (supportContainer) {
           supportContainer.innerHTML = `
@@ -1017,11 +1020,18 @@
                             </div>
                         </div>`;
         }
-
+      }
     }
 
     function handleLogout() {
       currentUser = null;
+      
+      // Force hide tabs
+      const navCheck = document.getElementById('nav-check');
+      const navAdmin = document.getElementById('nav-admin');
+      if (navCheck) navCheck.classList.add('hidden');
+      if (navAdmin) navAdmin.classList.add('hidden');
+      
       updateAuthUI();
       showPage('home');
       showCustomAlert("สำเร็จ", "ออกจากระบบเรียบร้อยแล้ว", "success");
@@ -1230,7 +1240,7 @@
                 </div>
                 <div class="flex gap-2">
                   <button class="bg-slate-200 text-slate-700 px-4 py-2 rounded-lg hover:bg-slate-300 transition-colors" onclick="navigator.clipboard.writeText('${k.key}'); alert('คัดลอก Key แล้ว!');">คัดลอก</button>
-                  ${isExpired ? `<button class="bg-primary text-white px-4 py-2 rounded-lg hover:bg-primary-container transition-colors" onclick="renewKey('${k.key}')">ต่ออายุ</button>` : ''}
+                  <button class="bg-primary text-white px-4 py-2 rounded-lg hover:bg-primary-container transition-colors" onclick="renewKey('${k.key}')">ต่ออายุ</button>
                   <button class="bg-red-100 text-red-600 px-4 py-2 rounded-lg hover:bg-red-200 transition-colors" onclick="deleteKeyPrompt('${k.key}')">ลบ</button>
                 </div>
               </div>`;
@@ -1244,11 +1254,81 @@
       }
     }
 
+    let currentRenewKey = '';
+    
     function renewKey(key) {
-      if (window.$crisp) {
-        $crisp.push(['do', 'chat:open']);
-        $crisp.push(['do', 'message:send', ['text', `สวัสดีครับ ผมต้องการต่ออายุ Key: ${key} ครับ\n(รบกวนแจ้งแอดมินว่าต้องการต่อแบบ รายเดือน 159.- หรือ รายปี 1590.-)`]]);
+      currentRenewKey = key;
+      const modal = document.getElementById('renew-modal');
+      if (modal) modal.classList.remove('hidden');
+      updateRenewPrice();
+    }
+    
+    function closeRenewModal() {
+      const modal = document.getElementById('renew-modal');
+      if (modal) modal.classList.add('hidden');
+    }
+    
+    function changeRenewMonths(val) {
+      const input = document.getElementById('renew-months-input');
+      if (!input) return;
+      let current = parseInt(input.value);
+      current += val;
+      if (current < 1) current = 1;
+      if (current > 12) current = 12;
+      input.value = current;
+      updateRenewPrice();
+    }
+    
+    function updateRenewPrice() {
+      const input = document.getElementById('renew-months-input');
+      const priceText = document.getElementById('renew-price-text');
+      if (!input || !priceText) return;
+      
+      const months = parseInt(input.value);
+      const rate = 159 - (months - 1) * 2.41;
+      const total = Math.round(rate * months);
+      
+      priceText.innerText = `${total.toLocaleString()} บาท`;
+    }
+    
+    async function confirmRenewKey() {
+      const input = document.getElementById('renew-months-input');
+      const months = input ? input.value : '1';
+      
+      // Send API request to create renew request
+      let payload = {
+        action: 'request_renew_key',
+        is_web_portal: true,
+        secret_key: 'kai_geotools_secret_2024',
+        key: currentRenewKey,
+        months: months,
+        username: currentUser ? currentUser.username : ''
+      };
+      
+      try {
+        const response = await fetch(API_URL, {
+          method: 'POST',
+          mode: 'cors',
+          headers: { 'Content-Type': 'text/plain' },
+          body: JSON.stringify(payload)
+        });
+        const res = await response.json();
+        if (res.status === 'success') {
+          showCustomAlert("สำเร็จ", "ส่งคำขอต่ออายุเรียบร้อยแล้ว กรุณาส่งสลิปโอนเงินในแชท", "success");
+          
+          // Also send chat message
+          if (window.$crisp) {
+            $crisp.push(['do', 'chat:open']);
+            $crisp.push(['do', 'message:send', ['text', `สวัสดีครับ ผมต้องการต่ออายุ Key: ${currentRenewKey} เป็นจำนวน ${months} เดือนครับ (ส่งคำขอในระบบแล้ว)`]]);
+          }
+        } else {
+          showCustomAlert("ล้มเหลว", res.message, "error");
+        }
+      } catch (e) {
+        showCustomAlert("ข้อผิดพลาด", "เชื่อมต่อไม่สำเร็จ", "error");
       }
+      
+      closeRenewModal();
     }
 
     function changeMonths(val) {
@@ -1718,6 +1798,42 @@
       
       <div class="flex gap-3">
         <button class="flex-1 bg-primary text-white font-bold py-3.5 rounded-xl hover:bg-primary-container transition-all" onclick="closeKeyModal()">เข้าใจแล้ว</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- RENEW KEY MODAL -->
+  <div id="renew-modal" class="hidden fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/50 backdrop-blur-sm">
+    <div class="bg-white rounded-3xl p-8 max-w-sm w-full mx-4 shadow-2xl border border-outline-variant transform transition-all scale-100">
+      <div class="text-center mb-6">
+        <div class="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
+          <span class="material-symbols-outlined text-primary text-3xl">autorenew</span>
+        </div>
+        <h3 class="text-xl font-bold text-slate-900">ต่ออายุ Key</h3>
+        <p class="text-on-surface-variant text-sm mt-1">กรุณาระบุจำนวนเดือนที่ต้องการต่ออายุ</p>
+      </div>
+      
+      <div class="flex flex-col items-center justify-center text-center mb-6">
+        <label class="text-sm font-bold text-slate-700 mb-2 block">จำนวนเดือน</label>
+        <div class="flex items-center gap-2 justify-center">
+          <button class="bg-slate-100 text-slate-700 w-10 h-10 rounded-lg flex items-center justify-center font-bold hover:bg-slate-200 transition-colors" onclick="changeRenewMonths(-1)">-</button>
+          <input type="number" id="renew-months-input" class="w-20 text-center bg-slate-50 border border-outline-variant rounded-lg px-2 py-2 outline-none font-bold text-lg" value="1" min="1" max="12" readonly>
+          <button class="bg-slate-100 text-slate-700 w-10 h-10 rounded-lg flex items-center justify-center font-bold hover:bg-slate-200 transition-colors" onclick="changeRenewMonths(1)">+</button>
+          <span class="text-sm text-slate-500 font-bold">เดือน</span>
+        </div>
+      </div>
+      
+      <div class="p-4 bg-slate-50 rounded-xl border border-outline-variant flex flex-col items-center justify-center text-center mb-6">
+        <div class="text-xs text-slate-400 uppercase tracking-widest mb-1 font-bold">ยอดที่ต้องชำระ (ประมาณการ)</div>
+        <div class="text-2xl font-black text-primary" id="renew-price-text">159 บาท</div>
+      </div>
+      
+      <div class="flex gap-3">
+        <button class="flex-1 bg-slate-100 text-slate-700 font-bold py-3.5 rounded-xl hover:bg-slate-200 transition-all" onclick="closeRenewModal()">ยกเลิก</button>
+        <button class="flex-1 bg-primary text-white font-bold py-3.5 rounded-xl hover:bg-primary-container transition-all flex items-center justify-center gap-2" onclick="confirmRenewKey()">
+          <span class="material-symbols-outlined text-sm">chat</span>
+          ตกลงส่งแชท
+        </button>
       </div>
     </div>
   </div>
