@@ -120,15 +120,16 @@
   <!-- Navigation -->
   <nav class="fixed top-0 w-full z-50 bg-white/80 backdrop-blur-md border-b border-outline-variant">
     <div class="flex justify-between items-center px-6 h-20 w-full max-w-7xl mx-auto">
+      <!-- Mobile Menu Button -->
+      <button class="lg:hidden text-slate-700 hover:text-primary transition-colors" onclick="toggleMobileMenu()">
+        <span class="material-symbols-outlined text-3xl">menu</span>
+      </button>
+
       <div class="font-heading text-2xl font-bold text-primary tracking-tight cursor-pointer flex items-center gap-2"
         onclick="showPage('home')">
         <span class="material-symbols-outlined text-3xl">hub</span>
         GeoTools
       </div>
-      <!-- Mobile Menu Button -->
-      <button class="lg:hidden text-slate-700 hover:text-primary transition-colors" onclick="toggleMobileMenu()">
-        <span class="material-symbols-outlined text-3xl">menu</span>
-      </button>
 
       <!-- Desktop Menu -->
       <div class="hidden lg:flex gap-6 font-medium">
@@ -170,6 +171,7 @@
         <div class="flex flex-col p-6 space-y-4 font-medium">
           <button class="text-on-surface-variant hover:text-primary transition-colors text-left" onclick="showPage('home'); toggleMobileMenu();">หน้าแรก</button>
           <button class="text-on-surface-variant hover:text-primary transition-colors text-left" onclick="showPage('manuals'); toggleMobileMenu();">คู่มือการใช้งาน</button>
+          <button class="text-on-surface-variant hover:text-primary transition-colors text-left" onclick="showPage('home'); setTimeout(() => { document.getElementById('download-section').scrollIntoView({ behavior: 'smooth' }); }, 100); toggleMobileMenu();">ดาวน์โหลด</button>
           <button class="text-on-surface-variant hover:text-primary transition-colors text-left hidden" id="nav-mobile-check" onclick="showPage('check'); toggleMobileMenu();">แดชบอร์ด</button>
           <button class="text-on-surface-variant hover:text-primary transition-colors text-left" onclick="showPage('services'); toggleMobileMenu();">ร่วมสนับสนุน</button>
           <button class="text-red-600 hover:text-red-700 transition-colors text-left font-bold hidden" id="nav-mobile-admin" onclick="showPage('admin'); toggleMobileMenu();">Admin</button>
@@ -197,9 +199,9 @@
     <div class="page active" id="page-home">
       <!-- Hero Section -->
       <section class="text-center py-12 mb-16">
-        <h1 class="text-6xl md:text-8xl font-black tracking-tighter mb-8 leading-[0.9] text-slate-900 font-heading">
+        <h1 class="text-4xl md:text-8xl font-black tracking-tighter mb-8 leading-[0.9] text-slate-900 font-heading">
           GeoTools<span class="text-primary">.</span></h1>
-        <p class="text-xl text-on-surface-variant max-w-2xl mx-auto mb-10">ระบบบริหารจัดการสมาชิก GeoTools
+        <p class="text-base md:text-xl text-on-surface-variant max-w-2xl mx-auto mb-10">ระบบบริหารจัดการสมาชิก GeoTools
           เพื่อการเรียนรู้และแบ่งปัน สำหรับชาว QGIS ที่ต้องการพัฒนาทักษะไปด้วยกัน</p>
         <div class="flex flex-wrap justify-center gap-4">
           <button
@@ -1050,6 +1052,7 @@
 
     function handleLogout() {
       currentUser = null;
+      localStorage.removeItem('currentUser');
       
       // Force hide tabs
       const navCheck = document.getElementById('nav-check');
@@ -1669,6 +1672,7 @@
               expiry_date: res.expiry_date,
               is_admin: res.is_admin === true
             };
+            localStorage.setItem('currentUser', JSON.stringify(currentUser));
             updateAuthUI();
             m = "ยินดีต้อนรับเข้าสู่ระบบ!";
             
@@ -1684,6 +1688,7 @@
               expiry_date: "",
               is_admin: false
             };
+            localStorage.setItem('currentUser', JSON.stringify(currentUser));
             updateAuthUI();
             m = "สมัครสมาชิกและเข้าสู่ระบบสำเร็จ!";
             setTimeout(() => showPage('check'), 1500);
@@ -1780,6 +1785,12 @@
           handleAction('login');
         }
       });
+    }
+
+    // ตรวจสอบการล็อกอินที่จำไว้
+    const savedUser = localStorage.getItem('currentUser');
+    if (savedUser) {
+      currentUser = JSON.parse(savedUser);
     }
 
     // เรียกใช้งานเพื่อให้หน้าจอแสดงผลถูกต้องทันที
