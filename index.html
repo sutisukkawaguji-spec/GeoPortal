@@ -720,19 +720,18 @@
       const displayUser = document.getElementById('display-username');
       const supportContainer = document.getElementById('support-container');
       const floatingChat = document.getElementById('floating-chat');
+      
+      // 👑 ซ่อนปุ่ม Admin ไว้ก่อนเสมอ (จะเปิดเฉพาะ Admin จริงๆ)
+      const navAdmin = document.getElementById('nav-admin');
+      if (navAdmin) navAdmin.classList.add('hidden');
 
       if (currentUser) {
         authGroup.classList.add('hidden');
         userGroup.classList.remove('hidden');
         
         // 👑 แสดงลิงก์ Admin ถ้าเป็นผู้ใช้สิทธิ์ Admin
-        const navAdmin = document.getElementById('nav-admin');
-        if (navAdmin) {
-          if (currentUser.is_admin) {
-            navAdmin.classList.remove('hidden');
-          } else {
-            navAdmin.classList.add('hidden');
-          }
+        if (navAdmin && currentUser.is_admin) {
+          navAdmin.classList.remove('hidden');
         }
 
         let statusText = currentUser.username;
@@ -1454,6 +1453,15 @@
             } else {
               setTimeout(() => showPage('manuals'), 1500);
             }
+          } else if (action === 'register') {
+            currentUser = {
+              username: payload.username,
+              expiry_date: "",
+              is_admin: false
+            };
+            updateAuthUI();
+            m = "สมัครสมาชิกและเข้าสู่ระบบสำเร็จ!";
+            setTimeout(() => showPage('manuals'), 1500);
           }
           if (action === 'activate_key_dash') {
             loadUserKeys(); // โหลดรายการ Key ใหม่
