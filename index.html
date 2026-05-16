@@ -1003,6 +1003,18 @@
                             </div>
                         </div>`;
         }
+      } else {
+        if (authGroup) authGroup.classList.remove('hidden');
+        if (userGroup) userGroup.classList.add('hidden');
+        
+        const dashNotLogged = document.getElementById('dashboard-not-logged-in');
+        const dashLogged = document.getElementById('dashboard-logged-in');
+        
+        if (dashNotLogged) dashNotLogged.classList.remove('hidden');
+        if (dashLogged) dashLogged.classList.add('hidden');
+        
+        const tbody = document.getElementById('user-keys-tbody');
+        if (tbody) tbody.innerHTML = '<tr><td colspan="5" class="text-center py-6 text-slate-500">กรุณาเข้าสู่ระบบ</td></tr>';
       }
     }
 
@@ -1010,7 +1022,7 @@
       currentUser = null;
       updateAuthUI();
       showPage('home');
-      alert("ออกจากระบบเรียบร้อยแล้ว");
+      showCustomAlert("สำเร็จ", "ออกจากระบบเรียบร้อยแล้ว", "success");
     }
 
     async function requestTrialWithCode() {
@@ -1633,6 +1645,24 @@
       const text = document.getElementById('generated-key-text').innerText;
       navigator.clipboard.writeText(text).then(() => {
         alert("คัดลอก Key เรียบร้อยแล้ว!");
+      });
+    }
+
+    // กด Enter เพื่อล็อกอิน
+    const loginUserEl = document.getElementById('login-user');
+    const loginPassEl = document.getElementById('login-pass');
+    
+    if (loginUserEl && loginPassEl) {
+      loginUserEl.addEventListener('keypress', function (e) {
+        if (e.key === 'Enter') {
+          loginPassEl.focus();
+        }
+      });
+      
+      loginPassEl.addEventListener('keypress', function (e) {
+        if (e.key === 'Enter') {
+          handleAction('login');
+        }
       });
     }
 
