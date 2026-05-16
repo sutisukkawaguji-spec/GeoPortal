@@ -791,8 +791,11 @@
       // 👑 ซ่อนปุ่ม Admin ไว้ก่อนเสมอ (จะเปิดเฉพาะ Admin จริงๆ)
       const navAdmin = document.getElementById('nav-admin');
       if (navAdmin) navAdmin.classList.add('hidden');
+      
+      const navCheck = document.getElementById('nav-check');
 
       if (currentUser) {
+        if (navCheck) navCheck.classList.remove('hidden');
         authGroup.classList.add('hidden');
         userGroup.classList.remove('hidden');
         
@@ -817,14 +820,9 @@
         const dashNotLogged = document.getElementById('dashboard-not-logged-in');
         const dashLogged = document.getElementById('dashboard-logged-in');
         
-        if (currentUser) {
           if (dashNotLogged) dashNotLogged.classList.add('hidden');
           if (dashLogged) dashLogged.classList.remove('hidden');
           loadUserKeys(); // โหลด Key มาแสดง
-        } else {
-          if (dashNotLogged) dashNotLogged.classList.remove('hidden');
-          if (dashLogged) dashLogged.classList.add('hidden');
-        }
 
         if (supportContainer) {
           supportContainer.innerHTML = `
@@ -919,9 +917,19 @@
           loadUserKeys();
         }
       } else {
-        authGroup.classList.remove('hidden');
-        userGroup.classList.add('hidden');
+        if (authGroup) authGroup.classList.remove('hidden');
+        if (userGroup) userGroup.classList.add('hidden');
         if (floatingChat) floatingChat.classList.add('hidden');
+        if (navCheck) navCheck.classList.add('hidden');
+        
+        const dashNotLogged = document.getElementById('dashboard-not-logged-in');
+        const dashLogged = document.getElementById('dashboard-logged-in');
+        
+        if (dashNotLogged) dashNotLogged.classList.remove('hidden');
+        if (dashLogged) dashLogged.classList.add('hidden');
+        
+        const tbody = document.getElementById('user-keys-tbody');
+        if (tbody) tbody.innerHTML = '<tr><td colspan="5" class="text-center py-6 text-slate-500">กรุณาเข้าสู่ระบบ</td></tr>';
 
         if (supportContainer) {
           supportContainer.innerHTML = `
@@ -1009,19 +1017,7 @@
                             </div>
                         </div>`;
         }
-      } else {
-        if (authGroup) authGroup.classList.remove('hidden');
-        if (userGroup) userGroup.classList.add('hidden');
-        
-        const dashNotLogged = document.getElementById('dashboard-not-logged-in');
-        const dashLogged = document.getElementById('dashboard-logged-in');
-        
-        if (dashNotLogged) dashNotLogged.classList.remove('hidden');
-        if (dashLogged) dashLogged.classList.add('hidden');
-        
-        const tbody = document.getElementById('user-keys-tbody');
-        if (tbody) tbody.innerHTML = '<tr><td colspan="5" class="text-center py-6 text-slate-500">กรุณาเข้าสู่ระบบ</td></tr>';
-      }
+
     }
 
     function handleLogout() {
