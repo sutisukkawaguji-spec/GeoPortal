@@ -741,6 +741,12 @@
       if (id === 'check' && currentUser && currentUser.is_admin) {
         id = 'admin';
       }
+      
+      // 🛑 ดักการแอบเข้าหน้า Admin
+      if (id === 'admin' && (!currentUser || !currentUser.is_admin)) {
+        showPage('home');
+        return;
+      }
 
       const navIds = ['home', 'manuals', 'check', 'services', 'login', 'register', 'admin'];
       navIds.forEach(nid => {
@@ -1551,7 +1557,7 @@
             currentUser = {
               username: payload.username,
               expiry_date: res.expiry_date,
-              is_admin: res.is_admin || false
+              is_admin: res.is_admin === true
             };
             updateAuthUI();
             m = "ยินดีต้อนรับเข้าสู่ระบบ!";
